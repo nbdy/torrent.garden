@@ -1,0 +1,15 @@
+torrent.garden {
+	encode zstd gzip
+
+    @backend_routes path /_event/* /ping /_upload /_upload/* /api/torrent/add
+    handle @backend_routes {
+        reverse_proxy garden-backend:8000
+    }
+
+	# Serve static frontend directly from exported files
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

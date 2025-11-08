@@ -1,0 +1,46 @@
+services:
+  valkey:
+    image: valkey/valkey:8-alpine
+    volumes:
+      - ./docker/valkey/valkey.conf:/usr/local/etc/valkey/valkey.conf:ro
+      - ./data/valkey:/data
+    command: valkey-server /usr/local/etc/valkey/valkey.conf
+
+  db:
+    image: postgres:17-alpine
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    env_file: .env
+
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    env_file: .env
+    environment:
+      DB_USER: "postgres"
+    depends_on:
+      - db
+    healthcheck:
+      test: [ 'CMD', 'pg_isready', '-U', 'postgres', '-d', 'garden' ]
+
+  garden-backend:
+    image: torrent_garden-backend:latest
+    env_file: .env
+    volumes:
+      - ./data/garden:/external
+    depends_on:
+      - valkey
+      - pgbouncer
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./data/caddy_data:/data
+      - ./data/caddy_config:/config
+      - ./export/frontend:/srv:ro
+    depends_on:
+      - garden-backend

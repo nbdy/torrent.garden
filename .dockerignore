@@ -1,0 +1,9 @@
+.states
+.venv
+.web
+docker
+reflex.db
+data
+docker-compose.yml
+*.zip
+export/

@@ -1,0 +1,19 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "torrent-garden"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.121.0",
+    "psycopg2-binary>=2.9.11",
+    "pydantic>=2.12.4",
+    "python-dotenv>=1.2.1",
+    "reflex>=0.8.18",
+    "sqlalchemy>=2.0.44",
+    "sqlmodel>=0.0.27",
+]
